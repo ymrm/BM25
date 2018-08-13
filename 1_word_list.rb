@@ -4,6 +4,7 @@ require 'natto' #文書を単語に分ける
 
 
 text_file = "sinsyo_list.txt" #新書として扱うデータだけを出力したテキスト
+text_file = "sinsyo_list_mini.txt" #新書として扱うデータだけを出力したテキスト
 file = open(text_file)
 text = Array.new
 file.each_line {|line|
@@ -33,17 +34,19 @@ allay2.each{|a|
 #p allay3
 natto = Natto::MeCab.new
 words_hash = Hash.new { |h,k| h[k] = {} } #単語を数える {文学=>{国語=>4,漢字=>2}}
+words_array = Hash.new  {|h,k| h[k] = []}#カウントせず、重複単語が存在する状態の配列が欲しい
 allay3.each{|a|
 
   titl = a["01"] #タイトル
   if titl != nil
      natto.parse(titl) do |n|
        if n.feature.match("名詞")
-         if words_hash[a["01"]].key?(n.surface) #既にその単語があれば #1冊ず つ単語を集計
-           words_hash[a["01"]][n.surface] += 1
-         else #なければ
-           words_hash[a["01"]][n.surface] = 1
-         end
+         words_array[a["01"]].push(n.surface)
+        # if words_hash[a["01"]].key?(n.surface) #既にその単語があれば #1冊ず つ単語を集計
+        #   words_hash[a["01"]][n.surface] += 1
+        # else #なければ
+        #   words_hash[a["01"]][n.surface] = 1
+        # end
        end
     end
   end
@@ -55,11 +58,12 @@ allay3.each{|a|
   if inst != nil
     natto.parse(inst) do |n|
       if n.feature.match("名詞")
-        if words_hash[a["01"]].key?(n.surface) #既にその単語があれば #1冊ずつ単語を集計
-          words_hash[a["01"]][n.surface] += 1
-        else #なければ
-          words_hash[a["01"]][n.surface] = 1
-        end
+         words_array[a["01"]].push(n.surface)
+       # if words_hash[a["01"]].key?(n.surface) #既にその単語があれば #1冊ずつ単語を集計
+       #   words_hash[a["01"]][n.surface] += 1
+       # else #なければ
+       #   words_hash[a["01"]][n.surface] = 1
+       # end
       end
     end
   end
@@ -68,16 +72,20 @@ allay3.each{|a|
   if cont != nil
      natto.parse(cont) do |n| 
        if n.feature.match("名詞")
-         if words_hash[a["01"]].key?(n.surface) #既にその単語があれば #1冊ずつ単語を集計
-           words_hash[a["01"]][n.surface] += 1
-         else #なければ
-           words_hash[a["01"]][n.surface] = 1
-         end
+         words_array[a["01"]].push(n.surface)
+        # if words_hash[a["01"]].key?(n.surface) #既にその単語があれば #1冊ずつ単語を集計
+        #   words_hash[a["01"]][n.surface] += 1
+        # else #なければ
+        #   words_hash[a["01"]][n.surface] = 1
+        # end
        end
     end
   end
 }
+p words_array #ハッシュの値が配列
 
+#全体での集計
+=begin
 words_hash_all = Hash.new
 allay3.each{|a|
 
@@ -120,7 +128,10 @@ allay3.each{|a|
     end
   end
 }
+=end
 
+#p words_hash
+=begin
 #標準入力
 sinsyo = gets.chomp!
 p sinsyo
@@ -136,6 +147,6 @@ words_array_all = words_hash_all.sort {|(k1, v1), (k2, v2)| v2 <=> v1 }
 words_array_all.each{|a|
 #  print a[0],",",a[1],"\n"
 }
-#=end
+=end
 
 
