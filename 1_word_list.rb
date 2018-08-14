@@ -82,7 +82,25 @@ allay3.each{|a|
     end
   end
 }
-p words_array #ハッシュの値が配列
+
+#標準入力で新書本を入力
+select_books = ARGV
+p select_books #選択された新書本を表示
+
+select_words = Array.new #選択された新書本の単語を収録する配列
+select_books.each{|k1,v1|
+  words_array.each{|k2,v2|
+    if k1 == k2
+      select_words.push(v2)
+  #    p v2 
+    end
+  }
+}
+#p select_words #二重配列
+select_words = select_words.flatten
+p select_words #一次元配列
+
+#p words_array #ハッシュの値が配列
 
 #全体での集計
 =begin
