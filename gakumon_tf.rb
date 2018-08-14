@@ -105,10 +105,8 @@ select_words = select_words.flatten
 
 
 ###########################################################################################################
-#紹介文部分をもってくる
-#text_file = "toc_body_scrape_sample.txt"
-text_file = "toc_body_scrape_mini.txt"
-#text_file = "toc_body_scrape_mini.txt"
+#学問TFを実行結果のテキストからもってくる
+text_file = "gakumon_tf.txt"
 file = open(text_file)
 
 text = Array.new
@@ -118,21 +116,22 @@ file.each_line {|line|
 }
 #p text
 
-#1要素ずつ配列に入れる
+#学問TFの結果を解釈
 text2 = Array.new
-  text.each {|a|
-  text2.push(a.split("|")) #バーで区切ったものが二重配列の最も中身
+text.each {|a|
+  text2.push(a.split(",")) #カンマで区切りの配列
 }
+#p text2 
 
- #全角カッコを半角カッコに変換する
- text2.each{|a|
-  a[3].gsub!(/（/,"(")
-  a[3].gsub!(/）/,")")
- }
- 
- #学問とマッチさせるために、text2を修正していく
- ##学科にあたる区分がない場合
- text2.each {|a|
+text2.each{|a|
+  select_words.each{|w|
+    if a[1] == w
+      p a
+    end
+  }
+}
+=begin
+text2.each {|a|
  if a[3] =~ /なし/ #なしと書いてあるので、
    a[3] = a[2]  #繰り下げ?
  #print a[1],"|",a[2],"|",a[3],"\n"
@@ -179,6 +178,7 @@ hash.each{|k,v|
 natto = Natto::MeCab.new
 #学問区分ごとに区分する場合
 words_hash = Hash.new { |h,k| h[k] = {} } #単語を数える {文学=>{国語=>4,漢字=>2}}
+words_hash_2 = Hash.new { |h,k| h[k] = {} } #単語を数える {文学=>{国語=>4,漢字=>2}}
 #p select_words
 select_words.each{|w|
 p w
@@ -195,7 +195,11 @@ p w
                     words_hash[k][n.surface] += 1
                   else #なければ
                     words_hash[k][n.surface] = 1
-                #puts "#{n.surface}: #{n.feature}"
+                  end
+                  if words_hash_2[k].key?(n.surface) #既にその単語があれば #k(区分)ごとに集計
+                    words_hash_2[k][n.surface] += 1
+                  else #なければ
+                    words_hash_2[k][n.surface] = 1
                   end
                 end
               end
@@ -212,6 +216,11 @@ p w
                 #puts "#{n.surface}: #{n.feature}"
                   end
                 end
+                  if words_hash_2[k].key?(n.surface) #既にその単語があれば #k(区分)ごとに集計
+                    words_hash_2[k][n.surface] += 1
+                  else #なければ
+                    words_hash_2[k][n.surface] = 1
+                  end
               end
             end
           end
@@ -231,58 +240,19 @@ words_hash.each{|k,v|
 #  p real_add #学問分野ごとの総単語数(延べ)
 }
 
-#########################################################
-#学問区分ごとに区分しない場合
-words_hash_all = Hash.new
 
-hash.each{|k,v|
-  v.each{|a|
-    text2.each{|b| #学科紹介文のほうと照合する
-      #p b[3]
-      if a == b[3]
-        if b[5] != nil
-          natto.parse(b[5]) do |n|
-            if n.feature.match("名詞")
-              if words_hash_all.key?(n.surface) #既にその単語があれば #k(区分)ごとに集計
-                words_hash_all[n.surface] += 1
-              else #なければ
-                words_hash_all[n.surface] = 1
-                #puts "#{n.surface}: #{n.feature}"
-              end
-            end
-          end
-        end
-        if b[4] != nil
-          natto.parse(b[4]) do |n|
-            if n.feature.match("名詞")
-              if words_hash_all.key?(n.surface) #既にその単語があれば #k(区分)ごとに集計
-                words_hash_all[n.surface] += 1
-              else #なければ
-                words_hash_all[n.surface] = 1
-                #puts "#{n.surface}: #{n.feature}"
-              end
-            end
-          end
-        end
-      end
-    }
-  }
-}
-
-
-words_array_all = words_hash_all.sort {|(k1, v1), (k2, v2)| v2 <=> v1 }
-words_array_all.each{|a|
-#  print a[0],",",a[1],"\n"
-}
 ########################################################
 #TF
 #学問ごとの単語数
 words_hash.each{|gakumon,v|
-  v.each{|word,kazu|
-    print gakumon,",",word,","
-    sum = v.values.inject(:+)
-   # p kazu
-#    p sum #分母は変わらず
-    p tf_1 = (kazu.to_d / sum.to_d).to_f
+  words_hash_2.each{|gakumon2,v2|
+    v.each{|word,kazu|
+        print gakumon2,",",word,","
+        sum = v2.values.inject(:+)
+        p kazu
+        p sum #分母は変わらず
+        p tf_1 = (kazu.to_d / sum.to_d).to_f
+    }
   }
 }
+=end
