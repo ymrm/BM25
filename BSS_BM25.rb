@@ -291,6 +291,25 @@ hash.each{|k,v|
   }
 }
 
+dl_hash = Hash.new #文書ごとにdlを計算する
+avdl = 0 #文書長を足していく
+words_hash.each{|k,v|
+#  p k #学問
+  v.values.inject(:+) #DL
+  dl_hash[k] = v.values.inject(:+) #DL
+  avdl += v.values.inject(:+) #全文書の単語を足していく
+}
+#p words_hash.size #文書数(54)
+avdl = avdl.to_f/words_hash.size #平均で上書き
+#p dl_hash
+
+k_hash = Hash.new
+dl_hash.each{|k,v|
+  k1 = 1.2
+  b = 1.2
+  k_hash[k]=k1*((1-b)+b*(v/avdl))
+}
+p k_hash
 
 ########################################################################
 #BM25の計算をする
@@ -299,146 +318,65 @@ hash.each{|k,v|
 #あたえられたクエリの1タームずつで繰り返す
 
 #タームを含む文書数を算出
-n_hash = Hash.new
+n_hash = Hash.new {|h,k| h[k] = {} }
 select_words.each{|word| #クエリ
   words_hash.each{|gakumon,v| #文書
   v.each{|v_word,v_kazu|
     if word == v_word #クエリと一致する文書内の単語があれば、
-      if n_hash.key?(word) #タームごとに出現する文書数をカウント
-        n_hash[word] += 1
+      if n_hash[word].key?(gakumon) #タームごとに出現する文書数をカウント
+        n_hash[word][gakumon] += 1
       else
-        n_hash[word] = 1
+        n_hash[word][gakumon] = 1
       end
     end
     }
   }
 }
-#p n_hash
 
+
+idf_hash = Hash.new #タームごとのIDF(w)
 include Math
 select_words.each{|word|
   n_hash.each{|n_hash_term,n_hash_n|
   if word == n_hash_term
-    n = n_hash_n.to_d #既に計算済み
-    n_2 = n_hash_n #既に計算済み
+    n = n_hash_n.size.to_d #既に計算済み
     nn = words_hash.size.to_d #学問数54
-    nn_2 = words_hash.size #学問数54
-#p nn
-    w_mother = nn-n+0.5.to_d
-    w_mother_2 = nn-n+0.5
-    w_child = n+0.5.to_d
-    w_child_2 = n+0.5
-#    w = log2(w_child/w_mother)
-p log2(0.1111111111111111.to_d)
-a = w_child_2/w_mother_2
-p Math.log2(a)
-p (w_child/w_mother).to_f
-#    w_2 = log2(w_child_2/w_mother_2)
-p word
-#p w
-#p w_2
+    w_mother = nn-n+0.5.to_d #分母
+    w_child = n+0.5.to_d #分子
+    idf = (log2(w_child/w_mother)).to_f #BM25用のIDF
+    idf_hash[word] = idf
   end
   }
 }
-=begin
-text_file = "gakumon_tf.txt"
-file = open(text_file)
+p idf_hash
 
-text = Array.new
-file.each_line {|line|
-  line.chomp!
-  text.push(line)
-}
-#p text
-
-#学問TFの結果を解釈
-text2 = Array.new
-text.each {|a|
-  text2.push(a.split(",")) #カンマで区切りの配列
-}
-#p text2 
-
-tf_a = Array.new
-text2.each{|a|
-    if a[1] == word
-      tf_a.push(a)
-    end
-}
-##########################################################################################
-#学問IDFを実行結果のテキストからもってくる
-text_file = "gakumon_idf.txt"
-file = open(text_file)
-
-text = Array.new
-file.each_line {|line|
-  line.chomp!
-  text.push(line)
-}
-#p text
-
-#学問TFの結果を解釈
-text2 = Array.new
-text.each {|a|
-  text2.push(a.split(",")) #カンマで区切りの配列
-}
-#p text2 
-idf_a = Array.new
-text2.each{|a|
-  if a[0] == word
-    idf_a.push(a)
-  end
-}
-##########################################################################################
-#学問DLを実行結果のテキストからもってくる
-text_file = "gakumon_dl.txt"
-file = open(text_file)
-
-text = Array.new
-file.each_line {|line|
-  line.chomp!
-  text.push(line)
-}
-dl_a = Array.new
-  text.each {|a|
-  dl_a.push(a.split(",")) #バーで区切ったものが二重配列の最も中身
-}
-#p dl_a #[単語,DL]
-dl_sum = 0
-dl_a.each{|a|
-  dl_sum += a[1].to_i
-}
-#p dl_sum
-#p dl_a.size
-avgdl = dl_sum.to_f/dl_a.size
-#p text
-#p dl_a
-#p tf_a
-#p idf_a
-bm25_a = Array.new #BM25の値を格納し、最後に学問ごとに集計
-tf_a.each{|a|
-  dl_a.each{|c|
-  if a[0] == c[0]
-    idf_a.each{|b|
-      if a[1] == b[0]
-        dl = c[1].to_f
-        tf = a[2].to_f
-        idf =  b[1].to_f
-        tfidf = tf * idf
-        k = 2.0
-        b = 0.75
-         score = (idf*((tf*(k+1)).to_d.to_f)/(tf+k*(1-b+(b*dl/avgdl))).to_d.to_f).to_d.to_f #to_d tio_iで浮動小数点の処理
-#p ((tf*(k+1))).to_d.to_f
-#p (tf+k*(1-b+(b*dl/avgdl))).to_d.to_f
-#        print a[0],",",a[1],",",score,"\n"
-        bm25_a.push([a[0],score])
+#tf
+#p words_hash
+select_words.each{|word|
+  words_hash.each{|k,v|
+#    p v.values.inject(:+) #TFの分母
+    v.each{|vk,vv|
+      if word == vk
+#        p vv #TFの分子
+        p k
+        p word
+        tf = vv.to_f/v.values.inject(:+)
+        p tf
       end
     }
+  }
+}
+
+#qtf
+select_words.each{|word|
+  select_words_hash.each{|h_word,h_kazu|
+  if word == h_word
+    p word
+    h_kazu #qtfの分子
+    select_words.size #qtfの分母
+    p qtf = h_kazu.to_f/select_words.size
   end
   }
 }
-#p bm25_a
-bm25_h = Hash.new
-bm25_h = bm25_a.each_with_object(Hash.new(0)) {|(k,v), h| h[k] += v}
-  p bm25_h.sort {|(k1, v1), (k2, v2)| v2 <=> v1 }
-}
-=end
+
+
