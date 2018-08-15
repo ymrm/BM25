@@ -85,21 +85,28 @@ allay3.each{|a|
   end
 }
 
-#標準入力で新書本を入力
-select_books = ARGV
-p select_books #選択された新書本を表示
-
-select_words = Array.new #選択された新書本の単語を収録する配列
-select_books.each{|book|
-  words_array.each{|k,v|
-    if book == k
-      select_words.push(v)
-  #    p v2
-    end
-  }
+books = Array.new #新書本タイトル
+words_array.each{|k,v|
+  books.push(k) #新書本タイトルのみの配列
 }
+books.each{|book|
+#標準入力で新書本を入力
+
+select_books = Array.new #ここで定義して、1冊ずつにする
+    select_books.push(book)
+  print select_books[0] #選択された新書本を表示
+
+  select_words = Array.new #選択された新書本の単語を収録する配列
+  select_books.each{|book|
+    words_array.each{|k,v|
+      if book == k
+        select_words.push(v)
+  #    p v2
+      end
+    }
+  }
 #p select_words #二重配列
-select_words = select_words.flatten.uniq
+  select_words = select_words.flatten.uniq
 
 #p select_words #一次元配列
 
@@ -107,106 +114,107 @@ select_words = select_words.flatten.uniq
 
 ###########################################################################################################
 #学問TFを実行結果のテキストからもってくる
-text_file = "gakumon_tf.txt"
-file = open(text_file)
+  text_file = "gakumon_tf.txt"
+  file = open(text_file)
 
-text = Array.new
-file.each_line {|line|
-  line.chomp!
-  text.push(line)
-}
+  text = Array.new
+  file.each_line {|line|
+    line.chomp!
+    text.push(line)
+  }
 #p text
 
 #学問TFの結果を解釈
-text2 = Array.new
-text.each {|a|
-  text2.push(a.split(",")) #カンマで区切りの配列
-}
+  text2 = Array.new
+  text.each {|a|
+    text2.push(a.split(",")) #カンマで区切りの配列
+  }
 #p text2 
 
-tf_a = Array.new
-text2.each{|a|
-  select_words.each{|w|
-    if a[1] == w
-      tf_a.push(a)
-    end
+  tf_a = Array.new
+  text2.each{|a|
+    select_words.each{|w|
+      if a[1] == w
+        tf_a.push(a)
+      end
+    }
   }
-}
 ##########################################################################################
 #学問IDFを実行結果のテキストからもってくる
-text_file = "gakumon_idf.txt"
-file = open(text_file)
+  text_file = "gakumon_idf.txt"
+  file = open(text_file)
 
-text = Array.new
-file.each_line {|line|
-  line.chomp!
-  text.push(line)
-}
+  text = Array.new
+  file.each_line {|line|
+    line.chomp!
+    text.push(line)
+  }
 #p text
 
 #学問TFの結果を解釈
-text2 = Array.new
-text.each {|a|
-  text2.push(a.split(",")) #カンマで区切りの配列
-}
-#p text2 
-idf_a = Array.new
-text2.each{|a|
-  select_words.each{|w|
-    if a[0] == w
-      idf_a.push(a)
-    end
+  text2 = Array.new
+  text.each {|a|
+    text2.push(a.split(",")) #カンマで区切りの配列
   }
-}
+#p text2 
+  idf_a = Array.new
+  text2.each{|a|
+    select_words.each{|w|
+      if a[0] == w
+        idf_a.push(a)
+      end
+    }
+  }
 ##########################################################################################
 #学問DLを実行結果のテキストからもってくる
-text_file = "gakumon_dl.txt"
-file = open(text_file)
+  text_file = "gakumon_dl.txt"
+  file = open(text_file)
 
-text = Array.new
-file.each_line {|line|
-  line.chomp!
-  text.push(line)
-}
-dl_a = Array.new
-  text.each {|a|
-  dl_a.push(a.split(",")) #バーで区切ったものが二重配列の最も中身
-}
+  text = Array.new
+  file.each_line {|line|
+    line.chomp!
+    text.push(line)
+  }
+  dl_a = Array.new
+    text.each {|a|
+    dl_a.push(a.split(",")) #バーで区切ったものが二重配列の最も中身
+  }
 #p dl_a #[単語,DL]
-dl_sum = 0
-dl_a.each{|a|
-  dl_sum += a[1].to_i
-}
+  dl_sum = 0
+  dl_a.each{|a|
+    dl_sum += a[1].to_i
+  }
 #p dl_sum
 #p dl_a.size
-avgdl = dl_sum.to_f/dl_a.size
+  avgdl = dl_sum.to_f/dl_a.size
 #p text
 #p dl_a
 #p tf_a
 #p idf_a
-bm25_a = Array.new #BM25の値を格納し、最後に学問ごとに集計
-tf_a.each{|a|
-  dl_a.each{|c|
-  if a[0] == c[0]
-    idf_a.each{|b|
-      if a[1] == b[0]
-        dl = c[1].to_f
-        tf = a[2].to_f
-        idf =  b[1].to_f
-        tfidf = tf * idf
-        k = 2.0
-        b = 0.75
-         score = (idf*((tf*(k+1)).to_d.to_f)/(tf+k*(1-b+(b*dl/avgdl))).to_d.to_f).to_d.to_f #to_d tio_iで浮動小数点の処理
+  bm25_a = Array.new #BM25の値を格納し、最後に学問ごとに集計
+  tf_a.each{|a|
+    dl_a.each{|c|
+    if a[0] == c[0]
+      idf_a.each{|b|
+        if a[1] == b[0]
+          dl = c[1].to_f
+          tf = a[2].to_f
+          idf =  b[1].to_f
+          tfidf = tf * idf
+          k = 2.0
+          b = 0.75
+          score = (idf*((tf*(k+1)).to_d.to_f)/(tf+k*(1-b+(b*dl/avgdl))).to_d.to_f).to_d.to_f #to_d tio_iで浮動小数点の処理
 #p ((tf*(k+1))).to_d.to_f
 #p (tf+k*(1-b+(b*dl/avgdl))).to_d.to_f
-        print a[0],",",a[1],",",score,"\n"
-        bm25_a.push([a[0],score])
-      end
+        #  print a[0],",",a[1],",",score,"\n"
+          bm25_a.push([a[0],score])
+        end
+      }
+    end
     }
-  end
   }
+  bm25_h = Hash.new
+  bm25_h = bm25_a.each_with_object(Hash.new(0)) {|(k,v), h| h[k] += v}
+  p bm25_h.sort {|(k1, v1), (k2, v2)| v2 <=> v1 }
+
 }
-#p bm25_a
-bm25_h = Hash.new
-bm25_h = bm25_a.each_with_object(Hash.new(0)) {|(k,v), h| h[k] += v}
-p bm25_h.sort {|(k1, v1), (k2, v2)| v2 <=> v1 }
