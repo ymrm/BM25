@@ -352,31 +352,66 @@ p idf_hash
 
 #tf
 #p words_hash
+tf_array = Array.new
 select_words.each{|word|
   words_hash.each{|k,v|
 #    p v.values.inject(:+) #TFの分母
     v.each{|vk,vv|
       if word == vk
 #        p vv #TFの分子
-        p k
-        p word
+#        p k
+#        p word
         tf = vv.to_f/v.values.inject(:+)
-        p tf
+#        p tf
+        tf_array.push([k,word,tf])
       end
     }
   }
 }
-
+p tf_array
 #qtf
+qtf_hash = Hash.new
 select_words.each{|word|
   select_words_hash.each{|h_word,h_kazu|
   if word == h_word
-    p word
+    #p word
     h_kazu #qtfの分子
     select_words.size #qtfの分母
-    p qtf = h_kazu.to_f/select_words.size
+    qtf = h_kazu.to_f/select_words.size
+    qtf_hash[word] = qtf
   end
   }
 }
+p qtf_hash
 
+k1 = 1.2.to_d
+b = 0.75.to_d
+k3 = 1000.to_d
 
+#学問ごとにBM25を計算
+bm25_hash = Hash.new {|h,k| h[k]=[]}
+k_hash.each{|gakumon1,k|
+  tf_array.each{|a|
+  if a[0] == gakumon1
+    qtf_hash.each{|term1,qtf|
+      idf_hash.each{|term2,idf|
+      if a[1] == term1 && term1 == term2
+        p gakumon1
+        p term1
+        p tf = a[2].to_d
+        p k = k.to_d
+        p idf = idf.to_d
+        p qtf = qtf.to_d
+        bm25 = idf * (((k1+1)*tf)/(k+tf)) * ((k3+1)*qtf)/(k3+qtf)
+        bm25_hash[gakumon1].push(bm25)
+      end
+      }
+    }
+  end
+  }
+}
+bm25_hash2 = Hash.new
+bm25_hash.each{|k,v|
+  bm25_hash2[k] = (v.inject(:+)).to_f
+}
+p bm25_hash2.sort {|(k1, v1), (k2, v2)| v2 <=> v1 }
