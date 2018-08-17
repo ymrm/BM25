@@ -318,7 +318,7 @@ avdl = avdl.to_f/words_hash.size #平均で上書き
 k_hash = Hash.new
 dl_hash.each{|k,v|
   k1 = 1.2
-  b = 1.2
+  b = 0.75
   k_hash[k]=k1*((1-b)+b*(v/avdl))
 }
 #p k_hash

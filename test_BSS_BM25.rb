@@ -6,7 +6,7 @@ require 'bigdecimal/util'
 require 'natto'
 
 #新書本ごとに単語を入手(クエリ)
-text_file = "sinsyo_list.txt" #新書として扱うデータだけを出力したテキスト
+text_file = "test_sinsyo_list.txt" #新書として扱うデータだけを出力したテキスト
 #text_file = "sinsyo_list_mini.txt" #新書として扱うデータだけを出力したテキス ト
 file = open(text_file)
 text = Array.new
@@ -119,7 +119,7 @@ select_words.each{|a|
 #p select_words_hash
 ########################################################################
 #文書側(学問側)の情報を入手
-text_file = "toc_body_scrape.txt"
+text_file = "test_toc_body_scrape.txt"
 #text_file = "toc_body_scrape_mini.txt"
 file = open(text_file)
 
@@ -160,7 +160,7 @@ text2 = Array.new
 
 
 ##########################################################################################
-text_file = "04.csv"
+text_file = "test_04.csv"
 file = open(text_file)
 
 text_ = Array.new

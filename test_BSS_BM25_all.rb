@@ -6,7 +6,7 @@ require 'bigdecimal/util'
 require 'natto'
 
 #新書本ごとに単語を入手(クエリ)
-text_file = "sinsyo_list.txt" #新書として扱うデータだけを出力したテキスト
+text_file = "test_sinsyo_list.txt" #新書として扱うデータだけを出力したテキスト
 #text_file = "sinsyo_list_mini.txt" #新書として扱うデータだけを出力したテキス ト
 file = open(text_file)
 text = Array.new
@@ -89,25 +89,50 @@ allay3.each{|a|
 #########################################################################
 #対象とする新書本を選択し、その新書本に付随するクエリを入手
 #標準入力で新書本を入力
-select_books = ARGV
-p select_books #選択された新書本を表示
+books = Array.new #新書本タイトル
+words_array.each{|k,v|
+  books.push(k) #新書本タイトルのみの配列
+}
+
+books.each{|book|
+#標準入力で新書本を入力
+
+select_books = Array.new #ここで定義して、1冊ずつにする
+    select_books.push(book)
+  print select_books[0] #選択された新書本を表示
+
+  select_words = Array.new #選択された新書本の単語を収録する配列
+  select_books.each{|book|
+    words_array.each{|k,v|
+      if book == k
+        select_words.push(v)
+  #    p v2
+      end
+    }
+  }
+#p select_words #二重配列
+  select_words = select_words.flatten.uniq
+
+
+#select_books = ARGV
+#p select_books #選択された新書本を表示
 
 #クエリの単語の配列
-select_words = Array.new #選択された新書本の単語を収録する配列
-select_books.each{|book|
-  words_array.each{|k,v|
-    if book == k
-      select_words.push(v)
+#select_words = Array.new #選択された新書本の単語を収録する配列
+#select_books.each{|book|
+#  words_array.each{|k,v|
+#    if book == k
+#      select_words.push(v)
   #    p v2
-    end
-  }
-}
+#    end
+#  }
+#}
 #p select_words #二重配列
-select_words = select_words.flatten
+#select_words = select_words.flatten
 #p select_words #一次元配列
 
 #クエリの単語のハッシュ
-p select_words.size 
+#p select_words.size 
 select_words_hash = Hash.new
 select_words.each{|a| 
   if select_words_hash.key?(a) #既に単語があれば
@@ -119,7 +144,7 @@ select_words.each{|a|
 #p select_words_hash
 ########################################################################
 #文書側(学問側)の情報を入手
-text_file = "toc_body_scrape.txt"
+text_file = "test_toc_body_scrape.txt"
 #text_file = "toc_body_scrape_mini.txt"
 file = open(text_file)
 
@@ -160,7 +185,7 @@ text2 = Array.new
 
 
 ##########################################################################################
-text_file = "04.csv"
+text_file = "test_04.csv"
 file = open(text_file)
 
 text_ = Array.new
@@ -230,27 +255,14 @@ hash.each{|k,v|
     }
   }
 }
-words_hash.each{|k,v|
-#  print k,"\n"
-  v.each{|vk,vv|
-#    print vk,",",vv,"\n"
-  }
-}
 
 #学m本区分ごとの総単語数(延べ)を求める
 real_add = 0
 words_hash.each{|k,v|
 #  print k,"|" #学問区分
   v.each{|kk,vv|
-#  if kk == "," #カンマだけこの後でエラーを起こしているので、ここでなかったことにする
-#    add = v.values.inject(:+)
-#    real_add = add - vv #カンマの分の単語数を引く
-#    break #ここでbreakしないと引く前の合計値が上書きされてしまう
-#  else
     real_add = v.values.inject(:+) #学問分野ごとの総単語数(延べ)
-#  end
   }
-#  p real_add #学問分野ごとの総単語数(延べ)
 }
 
 #########################################################
@@ -309,6 +321,7 @@ dl_hash.each{|k,v|
   b = 0.75
   k_hash[k]=k1*((1-b)+b*(v/avdl))
 }
+print "K : "
 p k_hash
 
 ########################################################################
@@ -348,6 +361,7 @@ select_words.each{|word|
   end
   }
 }
+print "idf : "
 p idf_hash
 
 #tf
@@ -368,6 +382,7 @@ select_words.each{|word|
     }
   }
 }
+print "tf : "
 p tf_array
 #qtf
 qtf_hash = Hash.new
@@ -382,6 +397,7 @@ select_words.each{|word|
   end
   }
 }
+print "qtf : "
 p qtf_hash
 
 k1 = 1.2.to_d
@@ -396,12 +412,12 @@ k_hash.each{|gakumon1,k|
     qtf_hash.each{|term1,qtf|
       idf_hash.each{|term2,idf|
       if a[1] == term1 && term1 == term2
-        p gakumon1
-        p term1
-        p tf = a[2].to_d
-        p k = k.to_d
-        p idf = idf.to_d
-        p qtf = qtf.to_d
+      #  p gakumon1
+      #  p term1
+        tf = a[2].to_d
+        k = k.to_d
+        idf = idf.to_d
+        qtf = qtf.to_d
         bm25 = idf * (((k1+1)*tf)/(k+tf)) * ((k3+1)*qtf)/(k3+qtf)
         bm25_hash[gakumon1].push(bm25)
       end
@@ -414,4 +430,6 @@ bm25_hash2 = Hash.new
 bm25_hash.each{|k,v|
   bm25_hash2[k] = (v.inject(:+)).to_f
 }
+print "結果 : "
 p bm25_hash2.sort {|(k1, v1), (k2, v2)| v2 <=> v1 }
+}
