@@ -309,10 +309,12 @@ words_hash.each{|k,v|
 #  p k #学問
   v.values.inject(:+) #DL
   dl_hash[k] = v.values.inject(:+) #DL
+p v.values.inject(:+)
   avdl += v.values.inject(:+) #全文書の単語を足していく
 }
 #p words_hash.size #文書数(54)
 avdl = avdl.to_f/words_hash.size #平均で上書き
+p avdl
 #p dl_hash
 
 k_hash = Hash.new
@@ -356,7 +358,7 @@ select_words.each{|word|
     nn = words_hash.size.to_d #学問数54
     w_mother = nn-n+0.5.to_d #分母
     w_child = n+0.5.to_d #分子
-    idf = (log2(w_child/w_mother)).to_f #BM25用のIDF
+    idf = (log2(w_child/w_mother).to_d).to_f #BM25用のIDF
     idf_hash[word] = idf
   end
   }

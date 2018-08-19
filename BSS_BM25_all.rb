@@ -355,7 +355,7 @@ select_words.each{|word|
     nn = words_hash.size.to_d #学問数54
     w_mother = nn-n+0.5.to_d #分母
     w_child = n+0.5.to_d #分子
-    idf = (log2(w_child/w_mother)).to_f #BM25用のIDF
+    idf = (log2(w_child/w_mother).to_d).to_f #BM25用のIDF
     idf_hash[word] = idf
   end
   }
