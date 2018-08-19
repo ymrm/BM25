@@ -377,9 +377,9 @@ select_words.each{|word|
 #        p vv #TFの分子
 #        p k
 #        p word
-        tf = vv.to_f/v.values.inject(:+)
+         tf = vv.to_d/(v.values.inject(:+)).to_d
 #        p tf
-        tf_array.push([k,word,tf])
+        tf_array.push([k,word,tf.to_f])
       end
     }
   }
