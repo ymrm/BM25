@@ -110,8 +110,8 @@ select_books = Array.new #ここで定義して、1冊ずつにする
       end
     }
   }
-#p select_words #二重配列
-  select_words = select_words.flatten.uniq
+select_words = select_words.flatten #二重配列
+select_words_uniq = select_words.flatten.uniq
 
 
 #select_books = ARGV
@@ -141,7 +141,7 @@ select_words.each{|a|
     select_words_hash[a] = 1
   end
 }
-#p select_words_hash
+p select_words_hash
 ########################################################################
 #文書側(学問側)の情報を入手
 text_file = "test_toc_body_scrape.txt"
@@ -369,7 +369,7 @@ p idf_hash
 #tf
 #p words_hash
 tf_array = Array.new
-select_words.each{|word|
+select_words_uniq.each{|word| #クエリ側との単語の重複を見たいだけなので単語の重複がないほう
   words_hash.each{|k,v|
 #    p v.values.inject(:+) #TFの分母
     v.each{|vk,vv|
@@ -392,7 +392,6 @@ select_words.each{|word|
   select_words_hash.each{|h_word,h_kazu|
   if word == h_word
     #p word
-    h_kazu #qtfの分子
     select_words.size #qtfの分母
     qtf = h_kazu.to_f/select_words.size
     qtf_hash[word] = qtf

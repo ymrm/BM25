@@ -111,7 +111,8 @@ select_books = Array.new #ここで定義して、1冊ずつにする
     }
   }
 #p select_words #二重配列
-  select_words = select_words.flatten.uniq
+select_words = select_words.flatten
+select_words_uniq = select_words.flatten.uniq
 
 
 #select_books = ARGV
@@ -365,7 +366,7 @@ select_words.each{|word|
 #tf
 #p words_hash
 tf_array = Array.new
-select_words.each{|word|
+select_words_uniq.each{|word|
   words_hash.each{|k,v|
 #    p v.values.inject(:+) #TFの分母
     v.each{|vk,vv|
