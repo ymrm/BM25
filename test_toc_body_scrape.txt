@@ -1,4 +1,5 @@
 https://www.gyakubiki.net/s/INF04?SCH_CD=1003&GAKKA_CD=10030101|小樽商科大学|商学部|りんご学科|りんごを学ぶ|りんごはりんご
 https://www.gyakubiki.net/s/INF04?SCH_CD=1003&GAKKA_CD=10030102|小樽商科大学|商学部|桃学科|桃を学ぶ|桃
 https://www.gyakubiki.net/s/INF04?SCH_CD=1003&GAKKA_CD=10030103|小樽商科大学|商学部|ぶどう学科|ぶどうを学ぶ|ぶどう
-https://www.gyakubiki.net/s/INF04?SCH_CD=1003&GAKKA_CD=10030104|小樽商科大学|商学部|数学科|数学を学ぶ|数学
+https://www.gyakubiki.net/s/INF04?SCH_CD=1003&GAKKA_CD=10030104|小樽商科大学|商学部|数学科|数学を学ぶ|数学と計算
+https://www.gyakubiki.net/s/INF04?SCH_CD=1003&GAKKA_CD=10030104|小樽商科大学|商学部|理学科|理科を学ぶ|計算もします
