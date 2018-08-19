@@ -141,7 +141,7 @@ select_words.each{|a|
     select_words_hash[a] = 1
   end
 }
-p select_words_hash
+#p select_words_hash
 ########################################################################
 #文書側(学問側)の情報を入手
 text_file = "test_toc_body_scrape.txt"
@@ -309,12 +309,12 @@ words_hash.each{|k,v|
 #  p k #学問
   v.values.inject(:+) #DL
   dl_hash[k] = v.values.inject(:+) #DL
-p v.values.inject(:+)
+#p v.values.inject(:+)
   avdl += v.values.inject(:+) #全文書の単語を足していく
 }
 #p words_hash.size #文書数(54)
 avdl = avdl.to_f/words_hash.size #平均で上書き
-p avdl
+#p avdl
 #p dl_hash
 
 k_hash = Hash.new
@@ -323,8 +323,8 @@ dl_hash.each{|k,v|
   b = 0.75.to_d
   k_hash[k]=(k1*((1-b)+b*(v.to_d/avdl.to_d))).to_f
 }
-print "k_hash:"
-p k_hash
+#print "k_hash:"
+#p k_hash
 
 ########################################################################
 #BM25の計算をする
@@ -363,8 +363,8 @@ select_words.each{|word|
   end
   }
 }
-print "idf : "
-p idf_hash
+#print "idf : "
+#p idf_hash
 
 #tf
 #p words_hash
@@ -384,8 +384,8 @@ select_words_uniq.each{|word| #クエリ側との単語の重複を見たいだ�
     }
   }
 }
-print "tf : "
-p tf_array
+#print "tf : "
+#p tf_array
 #qtf
 qtf_hash = Hash.new
 select_words.each{|word|
@@ -394,12 +394,12 @@ select_words.each{|word|
     #p word
     select_words.size #qtfの分母
     qtf = h_kazu.to_f/select_words.size
-    qtf_hash[word] = qtf
+:    qtf_hash[word] = qtf
   end
   }
 }
-print "qtf : "
-p qtf_hash
+#print "qtf : "
+#p qtf_hash
 
 k1 = 1.2.to_d
 b = 0.75.to_d
@@ -431,6 +431,6 @@ bm25_hash2 = Hash.new
 bm25_hash.each{|k,v|
   bm25_hash2[k] = (v.inject(:+)).to_f
 }
-print "結果 : "
+#print "結果 : "
 p bm25_hash2.sort {|(k1, v1), (k2, v2)| v2 <=> v1 }
 }

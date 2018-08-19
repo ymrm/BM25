@@ -100,7 +100,7 @@ books.each{|book|
 select_books = Array.new #ここで定義して、1冊ずつにする
     select_books.push(book)
   print select_books[0] #選択された新書本を表示
-
+  print "\n"
   select_words = Array.new #選択された新書本の単語を収録する配列
   select_books.each{|book|
     words_array.each{|k,v|
@@ -322,7 +322,7 @@ dl_hash.each{|k,v|
   b = 0.75.to_d
   k_hash[k]=(k1*((1-b)+b*(v.to_d/avdl.to_d))).to_f
 }
-p k_hash
+#p k_hash
 
 ########################################################################
 #BM25の計算をする
