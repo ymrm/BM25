@@ -201,7 +201,7 @@ select_books = Array.new #ここで定義して、1冊ずつにする
           tf = a[2].to_f
           idf =  b[1].to_f
           tfidf = tf * idf
-          k = 2.0
+          k = 1.2
           b = 0.75
           score = (idf*((tf*(k+1)).to_d.to_f)/(tf+k*(1-b+(b*dl/avgdl))).to_d.to_f).to_d.to_f #to_d tio_iで浮動小数点の処理
 #p ((tf*(k+1))).to_d.to_f

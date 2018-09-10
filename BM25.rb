@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 require 'bigdecimal'
 require 'bigdecimal/util'
-
 require 'natto'
 
 text_file = "sinsyo_list.txt" #新書として扱うデータだけを出力したテキスト
@@ -194,7 +193,7 @@ tf_a.each{|a|
         tf = a[2].to_f
         idf =  b[1].to_f
         tfidf = tf * idf
-        k = 2.0
+        k = 1.2
         b = 0.75
          score = (idf*((tf*(k+1)).to_d.to_f)/(tf+k*(1-b+(b*dl/avgdl))).to_d.to_f).to_d.to_f #to_d tio_iで浮動小数点の処理
 #p ((tf*(k+1))).to_d.to_f

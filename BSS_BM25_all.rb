@@ -41,15 +41,16 @@ words_array = Hash.new  {|h,k| h[k] = []}#カウントせず、重複単語が�
 allay3.each{|a|
 
   titl = a["01"] #タイトル
-  if titl != nil
+  inst = a["08"]#内容説明
+  cont = a["09"] #目次
+  if titl != nil && inst != nil && cont != nil
      natto.parse(titl) do |n|
        if n.feature.match("名詞")
-         words_array[a["01"]].push(n.surface)
-        # if words_hash[a["01"]].key?(n.surface) #既にその単語があれば #1冊ず つ単語を集計
-        #   words_hash[a["01"]][n.surface] += 1
-        # else #なければ
-        #   words_hash[a["01"]][n.surface] = 1
-        # end
+         if words_hash[a["01"]].key?(n.surface) #既にその単語があれば #1冊ずつ単語を集計
+           words_hash[a["01"]][n.surface] += 1
+         else #なければ
+           words_hash[a["01"]][n.surface] = 1
+         end
        end
     end
   end
@@ -57,22 +58,19 @@ allay3.each{|a|
 
 
 
-  inst = a["08"]#内容説明
-  if inst != nil
+  if inst != nil && cont != nil
     natto.parse(inst) do |n|
       if n.feature.match("名詞")
-         words_array[a["01"]].push(n.surface)
-       # if words_hash[a["01"]].key?(n.surface) #既にその単語があれば #1冊ず つ単語を集計
-       #   words_hash[a["01"]][n.surface] += 1
-       # else #なければ
-       #   words_hash[a["01"]][n.surface] = 1
-       # end
+        if words_hash[a["01"]].key?(n.surface) #既にその単語があれば #1冊ず単語を集計
+          words_hash[a["01"]][n.surface] += 1
+        else #なければ
+          words_hash[a["01"]][n.surface] = 1
+        end
       end
     end
   end
 
-  cont = a["09"] #目次
-  if cont != nil
+  if inst != nil && cont != nil
      natto.parse(cont) do |n|
        if n.feature.match("名詞")
          words_array[a["01"]].push(n.surface)
@@ -257,7 +255,7 @@ hash.each{|k,v|
   }
 }
 
-#学m本区分ごとの総単語数(延べ)を求める
+#学問区分ごとの総単語数(延べ)を求める
 real_add = 0
 words_hash.each{|k,v|
 #  print k,"|" #学問区分
@@ -303,6 +301,7 @@ hash.each{|k,v|
     }
   }
 }
+#p words_hash
 
 dl_hash = Hash.new #文書ごとにdlを計算する
 avdl = 0 #文書長を足していく
@@ -354,10 +353,11 @@ select_words.each{|word|
   if word == n_hash_term
     n = n_hash_n.size.to_d #既に計算済み
     nn = words_hash.size.to_d #学問数54
-    w_mother = nn-n+0.5.to_d #分母
-    w_child = n+0.5.to_d #分子
+   # w_mother = nn-n+0.5.to_d #分母
+   # w_child = n+0.5.to_d #分子
 #逆数にするver
-    idf = (log2(w_mother/w_child).to_d).to_f #BM25用のIDF
+#    idf = (log2(w_mother/w_child).to_d).to_f #BM25用のIDF
+    idf = (log2(nn.to_d/n.to_d)).to_f
     idf_hash[word] = idf
   end
   }
