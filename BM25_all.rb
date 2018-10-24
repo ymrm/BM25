@@ -57,7 +57,7 @@ allay3.each{|a|
 
 
   inst = a["08"]#内容説明
-  if inst != nil
+  if inst != nil && cont!=nil
     natto.parse(inst) do |n|
       if n.feature.match("名詞")
          words_array[a["01"]].push(n.surface)
@@ -71,7 +71,7 @@ allay3.each{|a|
   end
 
   cont = a["09"] #目次
-  if cont != nil
+  if cont != nil && inst!=nil
      natto.parse(cont) do |n|
        if n.feature.match("名詞")
          words_array[a["01"]].push(n.surface)
